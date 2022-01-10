@@ -47,3 +47,8 @@
     right: 0;
     cursor: pointer;
 }
+
+.fullname{
+    margin-left: 10px;
+    font-weight: bold;
+}

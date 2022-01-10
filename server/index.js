@@ -1,15 +1,41 @@
 import { Server } from "socket.io";
 
-const io = new Server({ 
-    cors: "http://localhost:3000"
- });
+const io = new Server({
+  cors: "http://localhost:3000",
+});
+
+let onlineUsers = [];
+
+const addUser = (username, socketId) => {
+  !onlineUsers.some((user) => user.username === username) &&
+    onlineUsers.push({ username, socketId });
+};
+
+const removeUser = (socketId) => {
+  if (onlineUsers.some((user) => user.socketId === socketId)) {
+    onlineUsers = onlineUsers.filter((user) => user.socket !== socketId);
+  }
+};
+
+const getUser = (username) => {
+    return onlineUsers.find(user => user.username === username);
+}
 
 io.on("connection", (socket) => {
-  console.log('someone has connected');
+  socket.on("addUser", (username) => {
+    addUser(username, socket.id);
+  });
+
+  socket.on("sendNotification", ({sender, receiver, type}) => {
+    const {socketId} = getUser(receiver);
+    io.to(socketId).emit("getNotification",{
+        sender,type
+    })
+  })
 
   socket.on("disconnect", () => {
-      console.log("user has left")
-  })
+    removeUser(socket.id);
+  });
 });
 
 io.listen(5000);

@@ -9,20 +9,25 @@ import data from "./data"
 function App() {
   const [username, setUsername] = useState("");
   const [user, setUser] = useState("");
+  const [socket, setSocket] = useState(null);
 
   useEffect(() => {
-    const socket = io("http://localhost:5000");
-    console.log(socket)
-    
+    setSocket(io("http://localhost:5000"));
   }, [])
+
+  useEffect(() => {
+    if(user){
+      socket?.emit('addUser', user)
+    }
+  },[socket, user])
 
   return (
     <div className="container">
       {user ? (
         <>
-          <Navbar />
+          <Navbar socket={socket}/>
           {
-            data.map(userPost => <Card key={userPost.id} userData={userPost}/>)
+            data.map(userPost => <Card key={userPost.id} userData={userPost} sender={user} socket={socket}/>)
           }
           <span className="username">{user}</span>
         </>

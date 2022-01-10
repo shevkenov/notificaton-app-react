@@ -15,7 +15,7 @@ body{
 
 .container{
   width: 50vh;
-  border: 5px solid limegreen;
+  border: 1px solid limegreen;
   border-radius: 5px;
 }
 
